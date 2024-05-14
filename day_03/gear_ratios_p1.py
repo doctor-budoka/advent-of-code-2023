@@ -54,6 +54,7 @@ def parse_input(input_str):
                 numbers[int(current_number)] = current_positions
                 current_number = ""
                 current_positions = set()
+            continue
         elif char == "." and current_number:
             numbers[int(current_number)] = current_positions
             current_number = ""
