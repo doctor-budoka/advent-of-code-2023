@@ -50,10 +50,11 @@ def parse_input(input_str):
         if char.isspace():
             row += 1
             col = 0
-            current_number = ""
-            current_positions = set()
-            continue
-        elif char == "." and current_number:    
+            if current_number:
+                numbers[int(current_number)] = current_positions
+                current_number = ""
+                current_positions = set()
+        elif char == "." and current_number:
             numbers[int(current_number)] = current_positions
             current_number = ""
             current_positions = set()
