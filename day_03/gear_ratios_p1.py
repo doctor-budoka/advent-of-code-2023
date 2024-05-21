@@ -25,7 +25,6 @@ class Point:
         }
 
 
-
 def gear_ratio_1(input_name):
     path = Path(__file__).parent / input_name
     input_str = read_file(path)
@@ -38,7 +37,7 @@ def gear_ratio_1(input_name):
 
 def parse_input(input_str):
     symbol_positions = set()
-    numbers = {}
+    numbers = []
     if input_str[-1]:
         input_str += "\n"
 
@@ -51,12 +50,12 @@ def parse_input(input_str):
             row += 1
             col = 0
             if current_number:
-                numbers[int(current_number)] = current_positions
+                numbers.append((int(current_number), current_positions))
                 current_number = ""
                 current_positions = set()
             continue
         elif char == "." and current_number:
-            numbers[int(current_number)] = current_positions
+            numbers.append((int(current_number), current_positions))
             current_number = ""
             current_positions = set()
         elif char == ".":
@@ -72,16 +71,16 @@ def parse_input(input_str):
 
 
 def extract_part_numbers(numbers, symbol_positions):
-    part_numbers = set()
-    for number, positions in numbers.items():
+    part_numbers = []
+    for number, positions in numbers:
         number_nbd = {
-            nbd
+            nbd_pnt
             for pos in positions
-            for nbd in pos.neighbours()
+            for nbd_pnt in pos.neighbours()
         }
         if number_nbd.intersection(symbol_positions):
-            part_numbers.add(number)
-    return part_numbers     
+            part_numbers.append(number)
+    return part_numbers
 
 
 if __name__ == "__main__":
