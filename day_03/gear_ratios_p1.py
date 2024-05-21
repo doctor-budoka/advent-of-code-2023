@@ -64,6 +64,10 @@ def parse_input(input_str):
             current_positions.add(Point(row, col))
             current_number += char
         else:
+            if current_number:
+                numbers.append((int(current_number), current_positions))
+                current_number = ""
+                current_positions = set()
             symbol_positions.add(Point(row, col))
         col += 1
 
