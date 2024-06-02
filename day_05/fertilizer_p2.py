@@ -42,7 +42,7 @@ class ItemRange:
         if self.start_range < start:
             diff.add(ItemRange(self.start_range, min(self.end_range, start -1)))
         if self.end_range > end:
-            diff.add(ItemRange(max(end + 1, self.end_range), self.end_range))
+            diff.add(ItemRange(max(end + 1, self.start_range), self.end_range))
         return diff
     
     def __add__(self, val: int):
@@ -98,16 +98,10 @@ def fertilizer_2(input_name):
     current_type = "seed"
     current_item_ranges = seed_ranges
     while current_type != "location":
-        print(current_type)
-        print(len(current_item_ranges))
-        print(current_item_ranges)
         edge_map = map_dict[current_type]
         new_item_range = edge_map.apply_to_ranges(current_item_ranges)
         current_item_ranges = new_item_range
         current_type = edge_map.to_str
-        print(current_item_ranges)
-        print(len(current_item_ranges))
-        print(current_type)
 
     min_loc = min([item_range.start_range for item_range in current_item_ranges])    
 
