@@ -21,7 +21,6 @@ def wait_for_it_1(input_name):
 
     races = parse_input(input_str)
     solution_ranges = list(map(get_upper_and_lower_bounds, races))
-    print(solution_ranges)
     output = reduce(mul, map(lambda x: x.upper - x.lower + 1, solution_ranges))
     return output
 
