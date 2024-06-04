@@ -15,7 +15,7 @@ type_ranks = {
     "three-of-a-kind": 4,
     "full-house": 5,
     "four-of-a-kind": 6,
-    "5ive-of-a-kind": 7,
+    "five-of-a-kind": 7,
 }
 
 class CamelHand:
