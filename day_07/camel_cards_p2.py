@@ -73,7 +73,7 @@ def _get_type_from_counts(counter):
         case (5, _):
             return "five-of-a-kind"
         case _:
-            raise ValueError("Something is wrong here...")
+            raise ValueError(f"Something is wrong here. Counts: {counter}")
         
 def _get_value_tuple(hand_type, hand):
     type_rank = type_ranks[hand_type]
@@ -97,7 +97,7 @@ def _card_as_int(card):
             case "A":
                 return 14
             case _:
-                raise ValueError("Shouldn't be here either")
+                raise ValueError(f"Shouldn't be here. Card: {card}")
 
 
 def camel_cards_1(input_name):
