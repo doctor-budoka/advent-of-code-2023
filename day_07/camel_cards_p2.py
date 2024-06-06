@@ -54,10 +54,11 @@ class CamelHand:
 
 
 def _get_type_from_counts(counter):
-    ordered_counts = sorted(counter.values(), reverse=True) + [0]
+    ordered_counts = sorted([val for val in counter.values() if val != "J"], reverse=True) + [0, 0]
     joker_count = counter.get("J", 0)
-    adjusted_first_count = ordered_counts[0] + joker_count
-    match adjusted_first_count, ordered_counts[1]:
+    high_count = ordered_counts[0]
+    second_high_count = ordered_counts[0]
+    match high_count + joker_count, second_high_count:
         case (1, _):
             return "high-card"
         case (2, 2):
