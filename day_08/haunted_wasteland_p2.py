@@ -30,8 +30,8 @@ class WastelandNode:
 
 def looped_generator(to_loop):
     while True:
-        for item in to_loop:
-            yield item
+        for ind, item in enumerate(to_loop):
+            yield ind, item
 
 
 
@@ -81,14 +81,12 @@ def _parse_line_in_adjacency_graph(neighbours_str):
 def follow_directions(directions, graph):
     start_nodes = get_start_nodes(graph)
 
-    steps = 0
-    current_nodes = start_nodes.copy()
-    for direction in looped_generator(directions):
-        if all(graph[node].ends_with == "Z" for node in current_nodes):
-            break
-        steps += 1
-        current_nodes = [graph[this_node].go(direction) for this_node in current_nodes]
-    return steps
+    summarised_journeys = {
+        start_node: summarise_journey(directions, graph, start_node)
+        for start_node in start_nodes
+    }
+    
+    return analyse_journeys(summarised_journeys)
 
 
 def get_start_nodes(graph):
@@ -96,6 +94,65 @@ def get_start_nodes(graph):
         name for name, node in graph.items()
         if node.ends_with == "A"
     ]
+
+
+def summarise_journey(directions, graph, start_node):
+    loop_start = find_loop_start(directions, graph, start_node)
+    overall_summary = {}
+    lead_in_summary = {}
+    loop_summary = {}
+    num_steps = 0
+    lead_in_length = 0
+    loop_length = 0
+
+    current_node_name = start_node
+    current_node = graph[start_node]
+    current_visit = (current_node_name, num_steps)
+
+    # visited = set()
+    # in_loop = (current_visit == loop_start)
+    # for step, direction in looped_generator(directions):
+    #     if in_loop:
+
+            
+    #     elif current_node.ends_with("Z") or current_visit == loop_start:
+    #         this_visit = (current_node_name, num_steps)
+    #         lead_in_length += 1
+
+            
+    #     if this_visit in visited:
+    #         break
+
+    #     visited.add(this_visit)
+    #     current_node_name = current_node.go(direction)
+    #     current_node = graph[current_node_name]
+    #     current_visit = (current_node_name, step)
+    #     num_steps += 1
+
+    return loop_start
+
+
+def find_loop_start(directions, graph, start_node):
+    steps = 0
+    current_node = start_node
+    visited = set()
+    for step, direction in looped_generator(directions):
+        this_visit = (current_node, step)
+        if this_visit in visited:
+            break
+        visited.add(this_visit)
+        current_node = graph[current_node].go(direction)
+        steps += 1
+
+    loop_start = this_visit or None
+    if loop_start is None:
+        raise ValueError("loop_start is None")
+    return loop_start
+
+
+def analyse_journeys(summarised_journeys):
+    print(summarised_journeys)
+    return 0
 
 
 if __name__ == "__main__":
