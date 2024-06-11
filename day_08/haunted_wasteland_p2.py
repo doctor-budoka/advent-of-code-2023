@@ -80,7 +80,7 @@ def _parse_line_in_adjacency_graph(neighbours_str):
 
 def follow_directions(directions, graph):
     start_nodes = get_start_nodes(graph)
-    print(start_nodes)
+
     steps = 0
     current_nodes = start_nodes.copy()
     for direction in looped_generator(directions):
