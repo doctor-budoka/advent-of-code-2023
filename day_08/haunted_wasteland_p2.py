@@ -103,6 +103,10 @@ def summarise_journey(directions, graph, start_node):
     lead_in_path = {}
     loop_length = 0
     loop_path = {}
+    loop_ind = 0
+    lead_in_ind = 0
+    loop_endpoints = {}
+    lead_in_endpoints = {}
 
     current_node_name = start_node
     current_node = graph[start_node]
@@ -115,6 +119,13 @@ def summarise_journey(directions, graph, start_node):
         lead_in_length += int(not in_loop)
         loop_length += int(in_loop)
         current_path_dict = loop_path if in_loop else lead_in_path
+        current_ind_counter = loop_ind if in_loop else lead_in_ind
+        current_endpoint_tracker = loop_endpoints if in_loop else lead_in_endpoints
+
+        if current_node_name.endswith("Z"):
+            current_endpoint_tracker[current_ind_counter] = current_visit
+
+        current_ind_counter += 1
 
         next_node_name = current_node.go(direction)
         next_visit = (next_node_name, step + 1)
@@ -126,8 +137,18 @@ def summarise_journey(directions, graph, start_node):
         if in_loop and current_visit == loop_start:
             break
 
-    lead_in_details = {"start": (start_node, 0), "length": lead_in_length, "path": lead_in_path}
-    loop_details = {"start": loop_start, "length": loop_length, "path": loop_path}
+    lead_in_details = {
+        "start": (start_node, 0), 
+        "length": lead_in_length, 
+        "path": lead_in_path, 
+        "endpoints": lead_in_endpoints,
+    }
+    loop_details = {
+        "start": loop_start, 
+        "length": loop_length, 
+        "path": loop_path,
+        "endpoints": loop_endpoints,
+    }
     overall_details = {
         "lead_in": lead_in_details,
         "loop": loop_details,
