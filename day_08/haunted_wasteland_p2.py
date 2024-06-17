@@ -35,7 +35,7 @@ def looped_generator(to_loop):
 
 
 
-def haunted_wasteland_1(input_name):
+def haunted_wasteland_2(input_name):
     path = Path(__file__).parent / input_name
     input_str = read_file(path)
 
@@ -99,37 +99,35 @@ def get_start_nodes(graph):
 def summarise_journey(directions, graph, start_node):
     loop_start = find_loop_start(directions, graph, start_node)
     overall_summary = {}
-    lead_in_summary = {}
+    lead_in_details = {}
     loop_summary = {}
     num_steps = 0
     lead_in_length = 0
+    lead_in = {}
     loop_length = 0
 
     current_node_name = start_node
     current_node = graph[start_node]
-    current_visit = (current_node_name, num_steps)
+    current_visit = (current_node_name, 0)
 
-    # visited = set()
-    # in_loop = (current_visit == loop_start)
-    # for step, direction in looped_generator(directions):
-    #     if in_loop:
+    visited = set()
+    for step, direction in looped_generator(directions):
+        if current_visit == loop_start:
+            break 
+        lead_in_length += 1
+        
+        # visited.add(this_visit)
+        next_node_name = current_node.go(direction)
+        next_visit = (next_node_name, step + 1)
+        lead_in[current_visit] = next_visit
+        current_visit = next_visit
+        current_node = graph[next_node_name]
+        num_steps += 1
 
-            
-    #     elif current_node.ends_with("Z") or current_visit == loop_start:
-    #         this_visit = (current_node_name, num_steps)
-    #         lead_in_length += 1
+    lead_in_details = {"length": lead_in_length, "path": lead_in}
 
-            
-    #     if this_visit in visited:
-    #         break
 
-    #     visited.add(this_visit)
-    #     current_node_name = current_node.go(direction)
-    #     current_node = graph[current_node_name]
-    #     current_visit = (current_node_name, step)
-    #     num_steps += 1
-
-    return loop_start
+    return lead_in_details, loop_start
 
 
 def find_loop_start(directions, graph, start_node):
@@ -157,5 +155,5 @@ def analyse_journeys(summarised_journeys):
 
 if __name__ == "__main__":
     args = parser.parse_args()
-    answer = haunted_wasteland_1(args.input_name)
+    answer = haunted_wasteland_2(args.input_name)
     print(answer)
