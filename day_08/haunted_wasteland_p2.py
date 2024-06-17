@@ -98,36 +98,41 @@ def get_start_nodes(graph):
 
 def summarise_journey(directions, graph, start_node):
     loop_start = find_loop_start(directions, graph, start_node)
-    overall_summary = {}
-    lead_in_details = {}
-    loop_summary = {}
-    num_steps = 0
+
     lead_in_length = 0
-    lead_in = {}
+    lead_in_path = {}
     loop_length = 0
+    loop_path = {}
 
     current_node_name = start_node
     current_node = graph[start_node]
     current_visit = (current_node_name, 0)
-
-    visited = set()
+    in_loop = False
     for step, direction in looped_generator(directions):
-        if current_visit == loop_start:
-            break 
-        lead_in_length += 1
+        if not in_loop and current_visit == loop_start:
+            in_loop = True
         
-        # visited.add(this_visit)
+        lead_in_length += int(not in_loop)
+        loop_length += int(in_loop)
+        current_path_dict = loop_path if in_loop else lead_in_path
+
         next_node_name = current_node.go(direction)
         next_visit = (next_node_name, step + 1)
-        lead_in[current_visit] = next_visit
+        
+        current_path_dict[current_visit] = next_visit
         current_visit = next_visit
         current_node = graph[next_node_name]
-        num_steps += 1
 
-    lead_in_details = {"length": lead_in_length, "path": lead_in}
+        if in_loop and current_visit == loop_start:
+            break
 
-
-    return lead_in_details, loop_start
+    lead_in_details = {"start": (start_node, 0), "length": lead_in_length, "path": lead_in_path}
+    loop_details = {"start": loop_start, "length": loop_length, "path": loop_path}
+    overall_details = {
+        "lead_in": lead_in_details,
+        "loop": loop_details,
+    }
+    return overall_details
 
 
 def find_loop_start(directions, graph, start_node):
