@@ -122,17 +122,18 @@ def summarise_journey(directions, graph, start_node):
         current_ind_counter = loop_ind if in_loop else lead_in_ind
         current_endpoint_tracker = loop_endpoints if in_loop else lead_in_endpoints
 
-        if current_node_name.endswith("Z"):
+        if current_node.ends_with == "Z":
             current_endpoint_tracker[current_ind_counter] = current_visit
 
         current_ind_counter += 1
 
         next_node_name = current_node.go(direction)
         next_visit = (next_node_name, step + 1)
-        
+
         current_path_dict[current_visit] = next_visit
         current_visit = next_visit
         current_node = graph[next_node_name]
+        current_node_name = current_node.name
 
         if in_loop and current_visit == loop_start:
             break
