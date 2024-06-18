@@ -1,6 +1,7 @@
 from argparse import ArgumentParser
 from pathlib import Path
 from dataclasses import dataclass
+import math
 
 from utils.io_utils import read_file
 
@@ -116,10 +117,8 @@ def summarise_journey(directions, graph, start_node):
         if not in_loop and current_visit == loop_start:
             in_loop = True
         
-        lead_in_length += int(not in_loop)
-        loop_length += int(in_loop)
         current_path_dict = loop_path if in_loop else lead_in_path
-        current_ind_counter = loop_ind if in_loop else lead_in_ind
+        current_ind_counter = loop_length if in_loop else lead_in_ind
         current_endpoint_tracker = loop_endpoints if in_loop else lead_in_endpoints
 
         if current_node.ends_with == "Z":
@@ -135,6 +134,8 @@ def summarise_journey(directions, graph, start_node):
         current_node = graph[next_node_name]
         current_node_name = current_node.name
 
+        lead_in_length += int(not in_loop)
+        loop_length += int(in_loop)
         if in_loop and current_visit == loop_start:
             break
 
@@ -177,7 +178,40 @@ def find_loop_start(directions, graph, start_node):
 
 def analyse_journeys(summarised_journeys):
     print(summarised_journeys)
+    shared_lead_in_length = max([
+        journey_sum["lead_in"]["length"] for journey_sum in summarised_journeys.values()
+    ])
+    if y := analyse_shared_lead_in(summarised_journeys, shared_lead_in_length):
+        return min(y)
     return 0
+
+
+def analyse_shared_lead_in(summarised_journeys, shared_lead_in_length):
+    shared_lead_in_endpoints = [
+        _get_shared_lead_in_endpoints(summarised_journey, shared_lead_in_length)
+        for summarised_journey in summarised_journeys.values()
+    ]
+    return shared_lead_in_endpoints[0].intersection(*shared_lead_in_endpoints)
+
+
+def _get_shared_lead_in_endpoints(summarised_journey, shared_lead_in_length):
+    lead_in_length = summarised_journey["lead_in"]["length"]
+    lead_in_endpoints = summarised_journey["lead_in"]["endpoints"]
+    endpoint_set = set(lead_in_endpoints.keys())
+
+    loop_length = summarised_journey["loop"]["length"]
+    loop_steps_to_do = shared_lead_in_length - lead_in_length
+    number_of_loops_to_check = math.ceil(float(loop_steps_to_do) / loop_length)
+    loop_endpoints = summarised_journey["loop"]["endpoints"]
+    for loop_num in range(number_of_loops_to_check):
+        index_offset = lead_in_length + loop_length * loop_num
+        endpoints_from_loop = {
+            index_offset + loop_ind
+            for loop_ind in loop_endpoints.keys()
+        }
+        endpoint_set.update(endpoints_from_loop)
+
+    return endpoint_set
 
 
 if __name__ == "__main__":
